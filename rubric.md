@@ -1,3 +1,5 @@
+# Rubric
+
 - [ ] Builds, installs, and executes sucessfully
 - [ ] B or higher on Go Report Card 
 - [ ] Incorporates an external API or package
