@@ -16,6 +16,7 @@ Organize the folder into subfolders by file type, so there's a starting point to
 - [ ] Report on total number of files by type, and volume of data
 - [ ] Optional flag for logging
 - [ ] [All rubric requirements](rubric.md)
+  - [ ] 
   
 
 ### Stretch Goals
