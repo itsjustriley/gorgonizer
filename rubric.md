@@ -1,0 +1,10 @@
+- [ ] Builds, installs, and executes sucessfully
+- [ ] B or higher on Go Report Card [![Go Report Card](https://goreportcard.com/badge/github.com/itsjustriley/gorgonizer)](https://goreportcard.com/report/github.com/itsjustriley/gorgonizer)
+- [ ] Incorporates an external API or package
+- [ ] Persists data in a file or database
+- [ ] README contains description
+- [ ] README contains screenshot OR install instructions
+- [ ] README contains example of how to use the program
+- [ ] 2 or more table-driven tests
+- [ ] 1 or more benchmark tests
+- [ ] All tests pass 
