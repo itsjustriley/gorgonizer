@@ -1,5 +1,5 @@
 - [ ] Builds, installs, and executes sucessfully
-- [ ] B or higher on Go Report Card [![Go Report Card](https://goreportcard.com/badge/github.com/itsjustriley/gorgonizer)](https://goreportcard.com/report/github.com/itsjustriley/gorgonizer)
+- [ ] B or higher on Go Report Card 
 - [ ] Incorporates an external API or package
 - [ ] Persists data in a file or database
 - [ ] README contains description
