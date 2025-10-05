@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"flag"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"path/filepath"
 	"github.com/h2non/filetype"
+	"github.com/pterm/pterm"
 )
 
 func getFileClass(buf []byte) string {
@@ -38,31 +38,48 @@ func isClassFolder(name string) bool {
 var verbose bool
 var deferOutput bool
 var outputMessages []string
+var noColor bool
 
 func printAndDeferOutput(message string) {
     if verbose {
-        fmt.Println(message)
+        switch {
+        case len(message) >= 5 && message[:5] == "Error":
+            pterm.Error.Println(message)
+        case len(message) >= 8 && message[:8] == "Skipping":
+            pterm.Warning.Println(message)
+        default:
+            pterm.Info.Println(message)
+        }
     }
     if deferOutput {
-        outputMessages = append(outputMessages, message)
+        var styled string
+        switch {
+        case len(message) >= 5 && message[:5] == "Error":
+            styled = pterm.Error.Sprint(message)
+        case len(message) >= 8 && message[:8] == "Skipping":
+            styled = pterm.Warning.Sprint(message)
+        default:
+            styled = pterm.Info.Sprint(message)
+        }
+        outputMessages = append(outputMessages, styled)
     }
 }
 
 func printOutputMessages() {
     for _, message := range outputMessages {
-        fmt.Println(message)
+        pterm.Println(message)
     }
 }
 
 func organizeFile(directory string, file os.FileInfo, includeSubfolders bool) {
     if file.IsDir() {
         if includeSubfolders && !isClassFolder(file.Name()) {
-            organizeDirectory(directory+"/"+file.Name(), includeSubfolders)
+            organizeDirectory(filepath.Join(directory, file.Name()), includeSubfolders)
         }
         return
     }
 
-    filePath := directory + "/" + file.Name()
+    filePath := filepath.Join(directory, file.Name())
     buf, err := ioutil.ReadFile(filePath)
     if err != nil {
         printAndDeferOutput("Error reading file " + file.Name() + ": " + err.Error())
@@ -80,27 +97,27 @@ func organizeFile(directory string, file os.FileInfo, includeSubfolders bool) {
         return
     }
 
-    subfolder := directory + "/" + fileClass
+    subfolder := filepath.Join(directory, fileClass)
     if _, err := os.Stat(subfolder); os.IsNotExist(err) {
         os.Mkdir(subfolder, 0755)
     }
 
-    if err := os.Rename(filePath, subfolder+"/"+file.Name()); err != nil {
+    if err := os.Rename(filePath, filepath.Join(subfolder, file.Name())); err != nil {
         printAndDeferOutput("Error moving file " + file.Name() + ": " + err.Error())
     }
 }
 
-func organizeDirectory(directory string, includeSubfolders bool) (int, error) {
+func organizeDirectory(directory string, includeSubfolders bool) (error) {
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
-			return 0, err
+			return err
 	}
-	printAndDeferOutput("Organizing directory: " + directory)
-  printAndDeferOutput("Found " + strconv.Itoa(len(files)) + " entries in: " + directory)
+	printAndDeferOutput("Organizing directory" + directory)
+  printAndDeferOutput("Found " + strconv.Itoa(len(files)) + " entries")
 	for _, file := range files {
 			organizeFile(directory, file, includeSubfolders)
 	}
-	return len(files), nil
+	return nil
 }
 
 func main() {
@@ -109,28 +126,33 @@ func main() {
 	includeSubfolders := flag.Bool("include-subfolders", false, "Include subfolders in the organization.")
   flag.BoolVar(&verbose, "verbose", false, "Print verbose output.")
   flag.BoolVar(&deferOutput, "defer-output", false, "Defer output until the end.")
+  flag.BoolVar(&noColor, "no-color", false, "Disable colored terminal output.")
 	// log := flag.Bool("log", false, "Save a log of operations.")
 	// exactMatch := flag.Bool("exact", false, "Organize by exact type ONLY.")
 	flag.Parse()
 
-	if *directory == "" {
-		fmt.Println("Error: The directory to organize is required.")
+    if noColor {
+        pterm.DisableColor()
+    }
+
+    if *directory == "" {
+        pterm.Error.Println("The directory to organize is required.")
 		return
 	}
 
-	fmt.Println("Starting organization...")
+    pterm.DefaultHeader.WithFullWidth().Println("Gorgonizer")
+    pterm.FgLightWhite.Println("Starting organization…")
+    pterm.FgDarkGray.Println("Directory:", *directory, "| Include subfolders:", strconv.FormatBool(*includeSubfolders))
 
-	count, err := organizeDirectory(*directory, *includeSubfolders)
+	err := organizeDirectory(*directory, *includeSubfolders)
 	if err != nil {
 			printAndDeferOutput("Error: Failed to read directory " + *directory + ": " + err.Error())
 			return
 	}
 
-	printAndDeferOutput("Found " + strconv.Itoa(count) + " files in directory " + *directory)
-
-	fmt.Println("Organization complete.")
+    pterm.Success.Println("Organization complete.")
 	if deferOutput {
-		fmt.Println("--------------------------------")
+        pterm.FgDarkGray.Println("────────────────────────────────")
 		printOutputMessages()
 	}
 }

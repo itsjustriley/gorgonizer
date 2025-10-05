@@ -38,6 +38,10 @@ By default, Gorgonizer groups by class (eg. Images, Videos, etc. See Supported T
 
 Generates a log as the utility runs documenting action taken.
 
+#### `--no-color` 
+
+Disable colour in terminal output.
+
 
 ### Examples
 #### Basic Usage
