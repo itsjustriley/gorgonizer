@@ -3,15 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"strings"
-	"time"
-	"os"
-	"strconv"
-	"path/filepath"
 	"github.com/h2non/filetype"
 	"github.com/pterm/pterm"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func getFileClass(buf []byte) string {
@@ -42,27 +42,27 @@ func isClassFolder(name string) bool {
 }
 
 func isExactFolder(name string) bool {
-    if name == "NoExt" {
-        return true
-    }
-    if name == "" || isClassFolder(name) {
-        return false
-    }
-    if strings.IndexByte(name, '.') >= 0 || strings.IndexByte(name, ' ') >= 0 {
-        return false
-    }
-    return name == strings.ToUpper(name)
+	if name == "NoExt" {
+		return true
+	}
+	if name == "" || isClassFolder(name) {
+		return false
+	}
+	if strings.IndexByte(name, '.') >= 0 || strings.IndexByte(name, ' ') >= 0 {
+		return false
+	}
+	return name == strings.ToUpper(name)
 }
 
 func boolMark(b bool) string {
-    if b {
-        return pterm.FgLightGreen.Sprint("✔")
-    }
-    return pterm.FgLightRed.Sprint("✖")
+	if b {
+		return pterm.FgLightGreen.Sprint("✔")
+	}
+	return pterm.FgLightRed.Sprint("✖")
 }
 
 func timestamp() string {
-  return time.Now().Format("2006-01-02 15:04:05")
+	return time.Now().Format("2006-01-02 15:04:05")
 }
 
 var verbose bool
@@ -74,8 +74,8 @@ var logMessages []string
 var stats bool
 
 type Stats struct {
-	totalCount int64
-	totalBytes int64
+	totalCount  int64
+	totalBytes  int64
 	countByType map[string]int64
 	bytesByType map[string]int64
 }
@@ -84,17 +84,17 @@ var statsAccumulator Stats
 
 func initStats() {
 	statsAccumulator = Stats{
-		totalCount: 0,
-		totalBytes: 0,
+		totalCount:  0,
+		totalBytes:  0,
 		countByType: make(map[string]int64),
 		bytesByType: make(map[string]int64),
 	}
 }
 
 func recordStats(typeKey string, sizeBytes int64) {
-    if statsAccumulator.countByType == nil || statsAccumulator.bytesByType == nil {
-        initStats()
-    }
+	if statsAccumulator.countByType == nil || statsAccumulator.bytesByType == nil {
+		initStats()
+	}
 	if typeKey == "" || sizeBytes < 0 {
 		return
 	}
@@ -151,157 +151,157 @@ func printStatsSummary() {
 }
 
 func printDeferLog(message string) {
-    if verbose {
-        switch {
-        case len(message) >= 5 && message[:5] == "Error":
-            pterm.Error.Println(message)
-        case len(message) >= 8 && message[:8] == "Skipping":
-            pterm.Warning.Println(message)
-        default:
-            pterm.Info.Println(message)
-        }
-    }
-    if deferOutput {
-        var styled string
-        switch {
-        case len(message) >= 5 && message[:5] == "Error":
-            styled = pterm.Error.Sprint(message)
-        case len(message) >= 8 && message[:8] == "Skipping":
-            styled = pterm.Warning.Sprint(message)
-        default:
-            styled = pterm.Info.Sprint(message)
-        }
-        outputMessages = append(outputMessages, styled)
-    }
-    if log {
-			messageWithTimestamp := timestamp() + " " + message
-        logMessages = append(logMessages, messageWithTimestamp)
-    }
+	if verbose {
+		switch {
+		case len(message) >= 5 && message[:5] == "Error":
+			pterm.Error.Println(message)
+		case len(message) >= 8 && message[:8] == "Skipping":
+			pterm.Warning.Println(message)
+		default:
+			pterm.Info.Println(message)
+		}
+	}
+	if deferOutput {
+		var styled string
+		switch {
+		case len(message) >= 5 && message[:5] == "Error":
+			styled = pterm.Error.Sprint(message)
+		case len(message) >= 8 && message[:8] == "Skipping":
+			styled = pterm.Warning.Sprint(message)
+		default:
+			styled = pterm.Info.Sprint(message)
+		}
+		outputMessages = append(outputMessages, styled)
+	}
+	if log {
+		messageWithTimestamp := timestamp() + " " + message
+		logMessages = append(logMessages, messageWithTimestamp)
+	}
 }
 
 func printOutputMessages() {
-    for _, message := range outputMessages {
-        pterm.Println(message)
-    }
+	for _, message := range outputMessages {
+		pterm.Println(message)
+	}
 }
 
 func copyDirectory(src, dst string) error {
-    if _, err := os.Stat(dst); err == nil {
-        if err := os.RemoveAll(dst); err != nil {
-            return fmt.Errorf("failed to remove destination %s: %w", dst, err)
-        }
-    }
+	if _, err := os.Stat(dst); err == nil {
+		if err := os.RemoveAll(dst); err != nil {
+			return fmt.Errorf("failed to remove destination %s: %w", dst, err)
+		}
+	}
 
-    if err := os.MkdirAll(dst, 0755); err != nil {
-        return fmt.Errorf("failed to create destination %s: %w", dst, err)
-    }
+	if err := os.MkdirAll(dst, 0755); err != nil {
+		return fmt.Errorf("failed to create destination %s: %w", dst, err)
+	}
 
-    return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
-        if err != nil {
-            return err
-        }
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 
-        relPath, err := filepath.Rel(src, path)
-        if err != nil {
-            return err
-        }
-        targetPath := filepath.Join(dst, relPath)
+		relPath, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		targetPath := filepath.Join(dst, relPath)
 
-        if info.IsDir() {
-            if relPath == "." {
-                return nil
-            }
-            return os.MkdirAll(targetPath, info.Mode())
-        }
+		if info.IsDir() {
+			if relPath == "." {
+				return nil
+			}
+			return os.MkdirAll(targetPath, info.Mode())
+		}
 
-        in, err := os.Open(path)
-        if err != nil {
-            return err
-        }
-        defer in.Close()
+		in, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer in.Close()
 
-        out, err := os.OpenFile(targetPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, info.Mode())
-        if err != nil {
-            return err
-        }
-        defer out.Close()
+		out, err := os.OpenFile(targetPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, info.Mode())
+		if err != nil {
+			return err
+		}
+		defer out.Close()
 
-        if _, err := io.Copy(out, in); err != nil {
-            return err
-        }
-        return nil
-    })
+		if _, err := io.Copy(out, in); err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func organizeFile(directory string, file os.FileInfo, includeSubfolders bool) {
-    if file.IsDir() {
-        if includeSubfolders {
-            if (!exact && isClassFolder(file.Name())) || (exact && isExactFolder(file.Name())) {
-                return
-            }
-            organizeDirectory(filepath.Join(directory, file.Name()), includeSubfolders)
-        }
-        return
-    }
+	if file.IsDir() {
+		if includeSubfolders {
+			if (!exact && isClassFolder(file.Name())) || (exact && isExactFolder(file.Name())) {
+				return
+			}
+			organizeDirectory(filepath.Join(directory, file.Name()), includeSubfolders)
+		}
+		return
+	}
 
-    filePath := filepath.Join(directory, file.Name())
-    buf, err := ioutil.ReadFile(filePath)
-    if err != nil {
-        printDeferLog("Error reading file " + file.Name() + ": " + err.Error())
-        return
-    }
+	filePath := filepath.Join(directory, file.Name())
+	buf, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		printDeferLog("Error reading file " + file.Name() + ": " + err.Error())
+		return
+	}
 
-    if len(buf) == 0 {
-        printDeferLog("Skipping empty file: " + file.Name())
-        return
-    }
+	if len(buf) == 0 {
+		printDeferLog("Skipping empty file: " + file.Name())
+		return
+	}
 
-    var destFolder string
-    if exact {
-        ext := strings.ToLower(filepath.Ext(file.Name()))
-        if ext == "" {
-            destFolder = "NoExt"
-        } else {
-            destFolder = strings.ToUpper(strings.TrimPrefix(ext, "."))
-        }
-    } else {
-        fileClass := getFileClass(buf)
-        if filepath.Base(directory) == fileClass {
-            return
-        }
-        destFolder = fileClass
-    }
+	var destFolder string
+	if exact {
+		ext := strings.ToLower(filepath.Ext(file.Name()))
+		if ext == "" {
+			destFolder = "NoExt"
+		} else {
+			destFolder = strings.ToUpper(strings.TrimPrefix(ext, "."))
+		}
+	} else {
+		fileClass := getFileClass(buf)
+		if filepath.Base(directory) == fileClass {
+			return
+		}
+		destFolder = fileClass
+	}
 
 	if stats {
 		recordStats(destFolder, file.Size())
 	}
 
-    if filepath.Base(directory) == destFolder {
-        return
-    }
+	if filepath.Base(directory) == destFolder {
+		return
+	}
 
-    subfolder := filepath.Join(directory, destFolder)
-    if _, err := os.Stat(subfolder); os.IsNotExist(err) {
-        os.Mkdir(subfolder, 0755)
-				printDeferLog("Created subfolder " + subfolder)
-    }
+	subfolder := filepath.Join(directory, destFolder)
+	if _, err := os.Stat(subfolder); os.IsNotExist(err) {
+		os.Mkdir(subfolder, 0755)
+		printDeferLog("Created subfolder " + subfolder)
+	}
 
-    if err := os.Rename(filePath, filepath.Join(subfolder, file.Name())); err != nil {
-        printDeferLog("Error moving file " + file.Name() + ": " + err.Error())
-    } else {
-      printDeferLog("Moved file " + file.Name() + " to " + subfolder)
-    }
+	if err := os.Rename(filePath, filepath.Join(subfolder, file.Name())); err != nil {
+		printDeferLog("Error moving file " + file.Name() + ": " + err.Error())
+	} else {
+		printDeferLog("Moved file " + file.Name() + " to " + subfolder)
+	}
 }
 
-func organizeDirectory(directory string, includeSubfolders bool) (error) {
+func organizeDirectory(directory string, includeSubfolders bool) error {
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
-			return err
+		return err
 	}
 	printDeferLog("Organizing directory " + directory)
-  printDeferLog("Found " + strconv.Itoa(len(files)) + " entries")
+	printDeferLog("Found " + strconv.Itoa(len(files)) + " entries")
 	for _, file := range files {
-			organizeFile(directory, file, includeSubfolders)
+		organizeFile(directory, file, includeSubfolders)
 	}
 	return nil
 }
@@ -309,13 +309,13 @@ func organizeDirectory(directory string, includeSubfolders bool) (error) {
 func main() {
 	directory := flag.String("dir", "", "The directory to organize.")
 	includeSubfolders := flag.Bool("include-subfolders", false, "Include subfolders in the organization.")
-  flag.BoolVar(&verbose, "verbose", false, "Print verbose output.")
-  flag.BoolVar(&deferOutput, "defer-output", false, "Defer output until the end.")
-  flag.BoolVar(&noColor, "no-color", false, "Disable colored terminal output.")
+	flag.BoolVar(&verbose, "verbose", false, "Print verbose output.")
+	flag.BoolVar(&deferOutput, "defer-output", false, "Defer output until the end.")
+	flag.BoolVar(&noColor, "no-color", false, "Disable colored terminal output.")
 	flag.BoolVar(&log, "log", false, "Save a log of operations.")
 	flag.BoolVar(&exact, "exact", false, "Organize by exact type ONLY.")
 	flag.BoolVar(&stats, "stats", false, "Print details about data organized.")
-  detailed := flag.Bool("detailed", false, "Print detailed output (deferred output, log, and stats).")
+	detailed := flag.Bool("detailed", false, "Print detailed output (deferred output, log, and stats).")
 	demo := flag.Bool("demo", false, "Run on copy of base-dummy-files.")
 
 	flag.Parse()
@@ -329,72 +329,72 @@ func main() {
 			printDeferLog("Prepared demo folder '" + *directory + "' from base-dummy-files")
 		}
 	}
-    if *detailed {
+	if *detailed {
 		deferOutput = true
 		log = true
 		stats = true
 	}
-    if stats {
-        initStats()
-    }
+	if stats {
+		initStats()
+	}
 
-    if noColor {
-        pterm.DisableColor()
-    }
+	if noColor {
+		pterm.DisableColor()
+	}
 
 	if *directory == "" {
-        pterm.Error.Println("The directory to organize is required.")
-				if log {
-					logMessages = append(logMessages, timestamp() + " Error: The directory to organize is required.")
-				}
+		pterm.Error.Println("The directory to organize is required.")
+		if log {
+			logMessages = append(logMessages, timestamp()+" Error: The directory to organize is required.")
+		}
 		return
 	}
 
-    pterm.DefaultHeader.WithFullWidth().Println("Gorgonizer")
-    options := fmt.Sprintf(
-        "Directory: %s\nInclude subfolders %s\nVerbose %s\nDefer output %s\nNo color %s\nLog %s\nExact %s\nStats %s",
-        *directory,
-        boolMark(*includeSubfolders),
-        boolMark(verbose),
-        boolMark(deferOutput),
-        boolMark(noColor),
-        boolMark(log),
-        boolMark(exact),
-				boolMark(stats),
-    )
-    styledTitle := pterm.FgLightCyan.Sprint("Options")
-    styledOptions := pterm.FgLightWhite.Sprint(options)
-    pterm.DefaultBox.
-        WithTitle(styledTitle).
-        WithTitleTopLeft().
-        WithLeftPadding(1).
-        WithRightPadding(1).
-        WithTopPadding(0).
-        WithBottomPadding(0).
-        Println(styledOptions)
-    if log {
-        logMessages = append(logMessages, timestamp() + " Options => Directory: " + *directory + 
-            " | Include subfolders: " + strconv.FormatBool(*includeSubfolders) +
-            " | Verbose: " + strconv.FormatBool(verbose) +
-            " | Defer output: " + strconv.FormatBool(deferOutput) +
-            " | No color: " + strconv.FormatBool(noColor) +
-            " | Log: " + strconv.FormatBool(log) +
-            " | Exact: " + strconv.FormatBool(exact) +
-            " | Stats: " + strconv.FormatBool(stats))
-    }
+	pterm.DefaultHeader.WithFullWidth().Println("Gorgonizer")
+	options := fmt.Sprintf(
+		"Directory: %s\nInclude subfolders %s\nVerbose %s\nDefer output %s\nNo color %s\nLog %s\nExact %s\nStats %s",
+		*directory,
+		boolMark(*includeSubfolders),
+		boolMark(verbose),
+		boolMark(deferOutput),
+		boolMark(noColor),
+		boolMark(log),
+		boolMark(exact),
+		boolMark(stats),
+	)
+	styledTitle := pterm.FgLightCyan.Sprint("Options")
+	styledOptions := pterm.FgLightWhite.Sprint(options)
+	pterm.DefaultBox.
+		WithTitle(styledTitle).
+		WithTitleTopLeft().
+		WithLeftPadding(1).
+		WithRightPadding(1).
+		WithTopPadding(0).
+		WithBottomPadding(0).
+		Println(styledOptions)
+	if log {
+		logMessages = append(logMessages, timestamp()+" Options => Directory: "+*directory+
+			" | Include subfolders: "+strconv.FormatBool(*includeSubfolders)+
+			" | Verbose: "+strconv.FormatBool(verbose)+
+			" | Defer output: "+strconv.FormatBool(deferOutput)+
+			" | No color: "+strconv.FormatBool(noColor)+
+			" | Log: "+strconv.FormatBool(log)+
+			" | Exact: "+strconv.FormatBool(exact)+
+			" | Stats: "+strconv.FormatBool(stats))
+	}
 
 	err := organizeDirectory(*directory, *includeSubfolders)
 	if err != nil {
-			printDeferLog("Error: Failed to read directory " + *directory + ": " + err.Error())
-			return
+		printDeferLog("Error: Failed to read directory " + *directory + ": " + err.Error())
+		return
 	}
 
-    pterm.Success.Println("Organization complete.")
+	pterm.Success.Println("Organization complete.")
 	if log {
-		logMessages = append(logMessages, timestamp() + " Organization complete.")
+		logMessages = append(logMessages, timestamp()+" Organization complete.")
 	}
 	if deferOutput {
-        pterm.FgDarkGray.Println("────────────────────────────────")
+		pterm.FgDarkGray.Println("────────────────────────────────")
 		printOutputMessages()
 	}
 
