@@ -24,12 +24,11 @@ func getFileClass(buf []byte) string {
 	}
 }
 
-
-// TODO: extract organize directory into a function so it can be recursive if subfolders included
-// TODO: extract file organization into a function for readability and testing?
-
-func organizeFile(directory string, file os.FileInfo) {
+func organizeFile(directory string, file os.FileInfo, includeSubfolders bool) {
     if file.IsDir() {
+        if includeSubfolders {
+            organizeDirectory(directory+"/"+file.Name(), includeSubfolders)
+        }
         return
     }
 
@@ -56,21 +55,23 @@ func organizeFile(directory string, file os.FileInfo) {
     }
 }
 
-func organizeDirectory(directory string) (int, error) {
-    files, err := ioutil.ReadDir(directory)
-    if err != nil {
-        return 0, err
-    }
-    for _, file := range files {
-        organizeFile(directory, file)
-    }
-    return len(files), nil
+func organizeDirectory(directory string, includeSubfolders bool) (int, error) {
+	files, err := ioutil.ReadDir(directory)
+	if err != nil {
+			return 0, err
+	}
+	fmt.Println("Organizing directory:", directory)
+  fmt.Println("Found", len(files), "entries in:", directory)
+	for _, file := range files {
+			organizeFile(directory, file, includeSubfolders)
+	}
+	return len(files), nil
 }
 
 func main() {
 	// TODO: implement flag behaviour
 	directory := flag.String("dir", "sample-folder", "The directory to organize.")
-	// includeSubfolders := flag.Bool("include-subfolders", false, "Include subfolders in the organization.")
+	includeSubfolders := flag.Bool("include-subfolders", false, "Include subfolders in the organization.")
 	// log := flag.Bool("log", false, "Save a log of operations.")
 	// exactMatch := flag.Bool("exact", false, "Organize by exact type ONLY.")
 	flag.Parse()
@@ -80,9 +81,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Organizing directory:", *directory)
-
-    count, err := organizeDirectory(*directory)
+    count, err := organizeDirectory(*directory, *includeSubfolders)
     if err != nil {
         fmt.Println("Error: Failed to read directory.")
         return
