@@ -5,7 +5,7 @@
 - [x] Incorporates an external API or package
   * github.com/h2non/filetype for file matching
   * github.com/pterm/pterm for terminal output styling
-- [ ] Persists data in a file or database
+- [x] Persists data in a file or database
   * Will have an optional `--log` flag to save a log of operations
 - [x] README contains description
 - [x] README contains screenshot OR install instructions

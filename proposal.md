@@ -10,11 +10,11 @@ Let's be real, who cleans out their downloads folder regularly? (If you just sai
 Organize the folder into subfolders by file type, so there's a starting point to search for things later when you can't remember the file name.
 
 ### Must Haves
-- [ ] When done running, directory is organized into sub folders by file type
-- [ ] Flag to provide folder location
-- [ ] Optional flag to have it organize subfolders
-- [ ] Report on total number of files by type, and volume of data
-- [ ] Optional flag for logging
+- [x] When done running, directory is organized into sub folders by file type
+- [x] Flag to provide folder location
+- [x] Optional flag to have it organize subfolders
+- [x] Report on total number of files by type, and volume of data
+- [x] Optional flag for logging
 - [ ] [All rubric requirements](rubric.md)
 
 ### Stretch Goals

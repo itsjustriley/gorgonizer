@@ -22,6 +22,7 @@ Note: You must include a directory when running.
 
 Include this to organize subfolders. 
 
+
 #### `--verbose`
 
 Include this to print details about organization as the program runs.
@@ -30,18 +31,29 @@ Include this to print details about organization as the program runs.
 
 Include this to output details about the organization process after the program is done running.
 
+#### `--stats`
+
+Include a summary of file types and data volume.
+
 #### `--exact`
 
 By default, Gorgonizer groups by class (eg. Images, Videos, etc. See Supported Types below). If you want it to group by specific file types, use this flag.
 
 ##### `--log`
 
-Generates a log as the utility runs documenting action taken.
+Generates a timestamped log.
 
 #### `--no-color` 
 
 Disable colour in terminal output.
 
+#### `--detailed`
+
+Use this to log + deferred output + stats.
+
+#### `--demo`
+
+Use this to organize dummy files, in combination with any other flags.
 
 ### Examples
 #### Basic Usage
