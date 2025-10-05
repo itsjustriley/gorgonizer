@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"flag"
 	"io/ioutil"
+	"github.com/h2non/filetype"
 )
 
 func main() {
@@ -20,11 +21,31 @@ func main() {
 
 	fmt.Println("Organizing directory:", *directory)
 
-	// TODO: implement organization logic
 	files, err := ioutil.ReadDir(*directory)
 	if err != nil {
 		fmt.Println("Error: Failed to read directory.")
 		return
+	}
+
+	for _, file := range files {
+		filePath := *directory + "/" + file.Name()
+		buf, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			fmt.Printf("Error reading file %s: %v\n", file.Name(), err)
+			continue
+		}
+		
+		kind, err := filetype.Match(buf)
+		if err != nil {
+			fmt.Printf("Error matching file type for %s: %v\n", file.Name(), err)
+			continue
+		}
+		
+		if kind == filetype.Unknown {
+			fmt.Printf("%s: Unknown file type\n", file.Name())
+		} else {
+			fmt.Printf("%s: %s (%s)\n", file.Name(), kind.MIME.Value, kind.Extension)
+		}
 	}
 
 	fmt.Println("Found", len(files), "files in directory.")
