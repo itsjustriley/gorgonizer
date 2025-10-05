@@ -1,7 +1,7 @@
 # Rubric
 
 - [x] Builds, installs, and executes sucessfully
-- [ ] B or higher on Go Report Card 
+- [x] B or higher on Go Report Card 
 - [x] Incorporates an external API or package
   * github.com/h2non/filetype for file matching
   * github.com/pterm/pterm for terminal output styling
