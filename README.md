@@ -20,7 +20,15 @@ Note: You must include a directory when running.
 ### Flags
 ##### `--include-subfolders`
 
-Use this to organize subfolders. 
+Include this to organize subfolders. 
+
+#### `--verbose`
+
+Include this to print details about organization as the program runs.
+
+#### `--defer-output`
+
+Include this to output details about the organization process after the program is done running.
 
 #### `--exact`
 
