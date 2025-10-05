@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/itsjustriley/gorgonizer)](https://goreportcard.com/report/github.com/itsjustriley/gorgonizer)
+[![Go Report Card](https://goreportcard.com/badge/github.com/itsjustriley/gorgonizer?cachebust=1)](https://goreportcard.com/report/github.com/itsjustriley/gorgonizer)
 
 # Gorgonizer
 Gorgonizer is an organizer utility written in Go, designed to organize messy directories into tidy folders by type (video, document, audio, etc.). You can also have it organize by specific file type.
