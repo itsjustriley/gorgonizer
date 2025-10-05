@@ -24,8 +24,48 @@ func getFileClass(buf []byte) string {
 	}
 }
 
+
 // TODO: extract organize directory into a function so it can be recursive if subfolders included
 // TODO: extract file organization into a function for readability and testing?
+
+func organizeFile(directory string, file os.FileInfo) {
+    if file.IsDir() {
+        return
+    }
+
+    filePath := directory + "/" + file.Name()
+    buf, err := ioutil.ReadFile(filePath)
+    if err != nil {
+        fmt.Printf("Error reading file %s: %v\n", file.Name(), err)
+        return
+    }
+
+    if len(buf) == 0 {
+        fmt.Printf("Skipping empty file: %s\n", file.Name())
+        return
+    }
+
+    fileClass := getFileClass(buf)
+    subfolder := directory + "/" + fileClass
+    if _, err := os.Stat(subfolder); os.IsNotExist(err) {
+        os.Mkdir(subfolder, 0755)
+    }
+
+    if err := os.Rename(filePath, subfolder+"/"+file.Name()); err != nil {
+        fmt.Printf("Error moving file %s: %v\n", file.Name(), err)
+    }
+}
+
+func organizeDirectory(directory string) (int, error) {
+    files, err := ioutil.ReadDir(directory)
+    if err != nil {
+        return 0, err
+    }
+    for _, file := range files {
+        organizeFile(directory, file)
+    }
+    return len(files), nil
+}
 
 func main() {
 	// TODO: implement flag behaviour
@@ -42,38 +82,13 @@ func main() {
 
 	fmt.Println("Organizing directory:", *directory)
 
-	files, err := ioutil.ReadDir(*directory)
-	if err != nil {
-		fmt.Println("Error: Failed to read directory.")
-		return
-	}
+    count, err := organizeDirectory(*directory)
+    if err != nil {
+        fmt.Println("Error: Failed to read directory.")
+        return
+    }
 
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		
-		filePath := *directory + "/" + file.Name()
-		buf, err := ioutil.ReadFile(filePath)
-		if err != nil {
-			fmt.Printf("Error reading file %s: %v\n", file.Name(), err)
-			continue
-		}
-		
-		if len(buf) == 0 {
-			fmt.Printf("Skipping empty file: %s\n", file.Name())
-			continue
-		}
-		
-		fileClass := getFileClass(buf)
-			subfolder := *directory + "/" + fileClass
-			if _, err := os.Stat(subfolder); os.IsNotExist(err) {
-				os.Mkdir(subfolder, 0755)
-			}
-			os.Rename(filePath, subfolder+"/"+file.Name())
-		}
-
-	fmt.Println("Found", len(files), "files in directory.")
+    fmt.Println("Found", count, "files in directory.")
 
 	fmt.Println("Organization complete.")
 }
