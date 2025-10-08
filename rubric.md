@@ -10,6 +10,6 @@
 - [x] README contains description
 - [x] README contains screenshot OR install instructions
 - [x] README contains example of how to use the program
-- [ ] 2 or more table-driven tests
-- [ ] 1 or more benchmark tests
-- [ ] All tests pass 
+- [x] 2 or more table-driven tests
+- [x] 1 or more benchmark tests
+- [x] All tests pass 

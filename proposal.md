@@ -15,9 +15,9 @@ Organize the folder into subfolders by file type, so there's a starting point to
 - [x] Optional flag to have it organize subfolders
 - [x] Report on total number of files by type, and volume of data
 - [x] Optional flag for logging
-- [ ] [All rubric requirements](rubric.md)
+- [x] [All rubric requirements](rubric.md)
 
-### Stretch Goals
+### Future Goals
 - [ ] Identify potential duplicate items for review by name
 - [ ] Flag for keywords to identify potential themes (ie. "go homework" or "Dungeons & Dragons, D&D, DnD, d20) and either find them and pause for user input on whether an identified file should go in a themed folder or not (y/n), plus give the folder a name
 - [ ] Use hashing to find duplicate items NOT by name
